@@ -1,8 +1,10 @@
 import React from 'react'
-import { Table, TableRowHead, TableCellHead, TableHead, TableBody, TableRow, TableCell } from '@dhis2/ui-core'
+import { useConfig } from '@dhis2/app-runtime'
+import { Table, TableRowHead, TableCellHead, TableHead, TableBody, TableRow, TableCell, Button } from '@dhis2/ui-core'
 import { UserCount } from './UserCount'
 
 export const OrgUnitTable = ({ orgUnits }) => {
+    const { baseUrl } = useConfig()
     return <Table>
         <TableHead>
             <TableRowHead>
@@ -40,6 +42,9 @@ export const OrgUnitTable = ({ orgUnits }) => {
                     </TableCell>
                     <TableCell>
                         {orgUnit.geometry ? orgUnit.geometry.type : 'NONE'}
+                    </TableCell>
+                    <TableCell>
+                        <Button onClick={() => { window.location = `${baseUrl}/dhis-web-maintenance/index.html#/edit/organisationUnitSection/organisationUnit/${orgUnit.id}` }}>Edit</Button>
                     </TableCell>
                 </TableRow>
             })}

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useDataQuery } from '@dhis2/app-runtime'
 import { Button } from '@dhis2/ui-core'
 import { OrgUnitTable } from './OrgUnitTable'
@@ -20,12 +20,17 @@ const query = {
 function OrgUnitTab({ search, filter }) {
     const { loading, error, data, refetch } = useDataQuery(query)
 
+    const isFirstRender = useRef(true)
     useEffect(() => {
-        refetch({
-            search,
-            filter,
-            page: 1
-        })
+        if (!isFirstRender.current) {
+            refetch({
+                search,
+                filter,
+                page: 1
+            })
+        } else {
+            isFirstRender.current = false;
+        }
     }, [search, filter])
 
     if (loading) {
