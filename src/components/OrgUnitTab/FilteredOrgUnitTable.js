@@ -17,7 +17,7 @@ const query = {
     }
 }
 
-function OrgUnitTab({ search, filter }) {
+function FilteredOrgUnitTable({ search, filter }) {
     const { loading, error, data, refetch } = useDataQuery(query)
 
     const isFirstRender = useRef(true)
@@ -61,4 +61,4 @@ function OrgUnitTab({ search, filter }) {
     </div>
 }
 
-export default OrgUnitTab
+export default FilteredOrgUnitTable
