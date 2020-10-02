@@ -1,21 +1,29 @@
 {
-  "name": "gis-admin",
-  "version": "1.1.0",
-  "description": "",
-  "license": "BSD-3-Clause",
-  "private": true,
-  "scripts": {
-    "build": "d2-app-scripts build",
-    "start": "d2-app-scripts start",
-    "test": "d2-app-scripts test",
-    "deploy": "d2-app-scripts deploy"
-  },
-  "devDependencies": {
-    "@dhis2/cli-app-scripts": "^5.2.1"
-  },
-  "dependencies": {
-    "@dhis2/app-runtime": "^2.3.0",
-    "@dhis2/ui": "^5.7.2"
-  },
-  "peerDependencies": {}
+    "name": "gis-admin",
+    "version": "1.1.0",
+    "description": "",
+    "license": "BSD-3-Clause",
+    "private": true,
+    "scripts": {
+        "build": "d2-app-scripts build",
+        "start": "d2-app-scripts start",
+        "test": "d2-app-scripts test",
+        "deploy": "d2-app-scripts deploy",
+        "lint": "d2-style js check && d2-style text check",
+        "format": "d2-style js apply && d2-style text apply"
+    },
+    "devDependencies": {
+        "@dhis2/cli-app-scripts": "^5.2.1",
+        "@dhis2/cli-style": "^7.0.0"
+    },
+    "dependencies": {
+        "@dhis2/app-runtime": "^2.3.0",
+        "@dhis2/d2-i18n": "^1.0.6",
+        "@dhis2/ui": "^5.7.2",
+        "prop-types": "^15.7.2",
+        "react": "^16.13.1",
+        "react-dom": "^16.13.1",
+        "styled-jsx": "^3.3.0"
+    },
+    "peerDependencies": {}
 }
