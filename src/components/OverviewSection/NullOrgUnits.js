@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 import { useDataQuery } from '@dhis2/app-runtime'
+import i18n from '@dhis2/d2-i18n'
 
 const query = {
     ou: {
@@ -25,7 +26,7 @@ export const NullOrgUnits = () => {
     }, [data])
 
     return <div>
-        <span style={{ fontWeight: 'bold' }}>Null Org Units : </span>
+        <span style={{ fontWeight: 'bold' }}>{i18n.t('Null Island Org Units')} : </span>
         <span>
             {loading && '...'}
             {error && 'ERR'}

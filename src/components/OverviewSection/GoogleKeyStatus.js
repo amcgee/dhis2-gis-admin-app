@@ -16,7 +16,7 @@ export const GoogleKeyStatus = () => {
         <span> : </span>
         <span>
             {loading && '...'}
-            {error && 'NOT CONFIGURED'}
+            {error && i18n.t('NOT CONFIGURED')}
             {data && (data.token.access_token.substr(0, 7) + '*****')}
         </span>
     </div>

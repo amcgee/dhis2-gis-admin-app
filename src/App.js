@@ -1,9 +1,15 @@
 import React, { useState } from 'react'
-import { Tabs } from './components/Tabs'
-import './App.css'
+import { OrgUnitSection } from './components/OrgUnitSection/OrgUnitSection'
+import { OverviewSection } from './components/OverviewSection/OverviewSection'
+
+import styles from './App.module.css'
+import './locales'
 
 const MyApp = () => {
-    return <Tabs />
+    return <div className={styles.container}>
+        <OverviewSection />
+        <OrgUnitSection />
+    </div>
 }
 
 export default MyApp

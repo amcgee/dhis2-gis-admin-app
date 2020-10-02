@@ -5,65 +5,59 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-10-02T16:58:40.174Z\n"
-"PO-Revision-Date: 2020-10-02T16:58:40.174Z\n"
-
-msgid "An error occurred!"
-msgstr ""
-
-msgid "Loading..."
-msgstr ""
+"POT-Creation-Date: 2020-10-02T16:43:51.338Z\n"
+"PO-Revision-Date: 2020-10-02T16:43:51.338Z\n"
 
 msgid "Previous"
-msgstr ""
+msgstr "Précédent"
 
 msgid "Page {{page}} of {{pageCount}}"
-msgstr ""
+msgstr "Page {{page}} sur {{pageCount}}"
 
 msgid "Next"
-msgstr ""
+msgstr "Suivant"
 
 msgid "Organisation Units"
-msgstr ""
+msgstr "Les Unités d'Organisation"
 
 msgid "All"
-msgstr ""
+msgstr "Tous"
 
 msgid "No Geometry"
-msgstr ""
+msgstr "Pas de Géométrie"
 
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 msgid "UID"
 msgstr ""
 
 msgid "Level"
-msgstr ""
+msgstr "Niveau"
 
 msgid "Users"
-msgstr ""
+msgstr "Utilisateurs"
 
 msgid "Geometry Type"
-msgstr ""
+msgstr "Type de Géométrie"
 
 msgid "NONE"
-msgstr ""
+msgstr "RIEN"
 
 msgid "Edit"
-msgstr ""
-
-msgid "Search..."
-msgstr ""
+msgstr "Modifier"
 
 msgid "Google EE Key"
-msgstr ""
+msgstr "Clé Google EE"
+
+msgid "Search..."
+msgstr "Chercher..."
 
 msgid "NOT CONFIGURED"
-msgstr ""
+msgstr "PAS CONFIGURÉ"
 
 msgid "Null Island Org Units"
-msgstr ""
+msgstr "Unités d'Org sur l'Île Nulle"
 
 msgid "Overview"
-msgstr ""
+msgstr "Aperçu"

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { InputField } from '@dhis2/ui-core'
+import { InputField } from '@dhis2/ui'
+import i18n from '@dhis2/d2-i18n'
 
 export const SearchInput = ({ onChange }) => {
     const [value, setValue] = useState('')
@@ -14,10 +15,9 @@ export const SearchInput = ({ onChange }) => {
     }, [onChange, value])
 
     return <InputField
-        label="Search"
         name="search"
         value={value}
-        placeholder="Search..."
-        onChange={e => setValue(e.target.value)}
+        placeholder={i18n.t('Search...')}
+        onChange={({ value }) => setValue(value)}
     />
 }

@@ -1,0 +1,44 @@
+.container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1rem;
+  }
+
+  .controls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0 0 16px 0;
+  }
+  
+  .controls > div {
+    margin: 0 32px 0 0;
+  }
+
+  .controls > label {
+    margin: 0 16px 0 0;
+  }
+
+  .tableContainer {
+    position: relative;
+  }
+
+  .table {
+    width: 640px;
+  }
+
+  .stretchCell {
+    width: 100%;
+  }
+
+  .tableFooter {
+    width: 100%;
+    text-align: center;
+    margin: 16px 0 0;
+  }
+
+  .pageCountDiv {
+    margin: 0 8px;
+  }
