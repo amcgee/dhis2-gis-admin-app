@@ -18,22 +18,25 @@ import styles from './OrgUnitSection.module.css'
 
 export const OrgUnitTable = ({ orgUnits, orderBy }) => {
     const { baseUrl } = useConfig()
-    const [order, setOrder] = useState('asc')
+    const [order, setOrder] = useState({ column: 'displayName', direction: 1 })
 
     const handleHeaderClick = field => {
-        // There's probably a simpler way to do this...just going between acedning and descending for the query
-        setOrder(order === 'asc' ? 'desc' : order === 'desc' ? 'asc' : 'desc')
-        //orderBy is actually our refetch paginated query/function we pass down as props
-        orderBy({ order: `${field}:${order}` })
+        if (order.column === field) {
+            setOrder({ column: field, direction: order.direction * -1 })
+        } else {
+            setOrder({ column: field, direction: 1 })
+        }
+
+        const direction = order.direction > 0 ? 'asc' : 'desc'
+        orderBy({ order: `${order.field}:${direction}` })
     }
 
     const tableHeaders = [
-        { display: 'Name', field: 'displayName' },
-        { display: 'UID', field: 'id' },
-        { display: 'Level', field: 'level' },
-        // {display: 'Users',
-        // field: 'Users'},
-        { display: 'Geometry Type', field: 'geometry' },
+        { display: i18n.t('Name'), field: 'displayName' },
+        { display: i18n.t('UID'), field: 'id' },
+        { display: i18n.t('Level'), field: 'level' },
+        // {display: i18n.t('Users'), field: 'Users'},
+        { display: i18n.t('Geometry Type'), field: 'geometry' },
     ]
 
     return (
@@ -49,7 +52,7 @@ export const OrgUnitTable = ({ orgUnits, orderBy }) => {
                                             handleHeaderClick(header.field)
                                         }
                                     >
-                                        {i18n.t(header.display)}
+                                        {header.display}
                                     </span>
                                 </TableCellHead>
                             ))}
