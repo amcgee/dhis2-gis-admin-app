@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { useConfig } from '@dhis2/app-runtime'
 import {
@@ -16,23 +16,37 @@ import { UserCount } from './UserCount'
 
 import styles from './OrgUnitSection.module.css'
 
-export const OrgUnitTable = ({ orgUnits }) => {
+export const OrgUnitTable = ({ orgUnits, orderBy }) => {
     const { baseUrl } = useConfig()
+    const [order, setOrder] = useState('asc');
+
+    const handleHeaderClick = (field) => {
+        // There's probably a simpler way to do this...just going between acedning and descending for the query
+        setOrder(order === 'asc' ? 'desc' : order === 'desc' ? 'asc': 'desc')
+        //orderBy is actually our refetch paginated query/function we pass down as props
+        orderBy({order: `${field}:${order}` })
+    }
+
+    const tableHeaders = [
+        {display: 'Name',
+        field: 'displayName'},
+        {display: 'UID',
+        field: 'id'},
+        {display: 'Level',
+        field: 'level'},
+        // {display: 'Users',
+        // field: 'Users'},
+        {display: 'Geometry Type',
+        field: 'geometry'}
+    ];
+
     return (
         <>
             {orgUnits.length ? (
                 <Table className={styles.table}>
                     <TableHead>
                         <TableRowHead>
-                            <TableCellHead className={styles.stretchCell}>
-                                {i18n.t('Name')}
-                            </TableCellHead>
-                            <TableCellHead>{i18n.t('UID')}</TableCellHead>
-                            <TableCellHead>{i18n.t('Level')}</TableCellHead>
-                            <TableCellHead>{i18n.t('Users')}</TableCellHead>
-                            <TableCellHead>
-                                {i18n.t('Geometry Type')}
-                            </TableCellHead>
+                            {tableHeaders.map(header => <TableCellHead><span onClick={()=> handleHeaderClick(header.field)}>{i18n.t(header.display)}</span></TableCellHead>)}
                             <TableCellHead></TableCellHead>
                         </TableRowHead>
                     </TableHead>
@@ -43,9 +57,9 @@ export const OrgUnitTable = ({ orgUnits }) => {
                                     <TableCell>{orgUnit.displayName}</TableCell>
                                     <TableCell>{orgUnit.id}</TableCell>
                                     <TableCell>{orgUnit.level}</TableCell>
-                                    <TableCell>
+                                    {/* <TableCell>
                                         <UserCount orgUnitID={orgUnit.id} />
-                                    </TableCell>
+                                    </TableCell> */}
                                     <TableCell>
                                         {orgUnit.geometry
                                             ? orgUnit.geometry.type
