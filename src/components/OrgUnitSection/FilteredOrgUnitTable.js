@@ -39,7 +39,7 @@ function FilteredOrgUnitTable({ search, filter, order }) {
                 search,
                 filter,
                 page: 1,
-                order
+                order,
             })
         } else {
             isFirstRender.current = false
@@ -53,16 +53,18 @@ function FilteredOrgUnitTable({ search, filter, order }) {
     if (!data) {
         return i18n.t('Loading...')
     }
-    if (data?.orgUnits?.organisationUnits.length < 1){
+    if (data?.orgUnits?.organisationUnits.length < 1) {
         return `${i18n.t('No results found for')} '${search}'.`
     }
-
 
     return (
         <>
             <div className={styles.tableContainer}>
                 {loading && <ComponentCover translucent />}
-                <OrgUnitTable orgUnits={data.orgUnits.organisationUnits} orderBy={refetch} />
+                <OrgUnitTable
+                    orgUnits={data.orgUnits.organisationUnits}
+                    orderBy={refetch}
+                />
             </div>
             <div className={styles.tableFooter}>
                 <Button
@@ -102,6 +104,7 @@ function FilteredOrgUnitTable({ search, filter, order }) {
 
 FilteredOrgUnitTable.propTypes = {
     filter: PropTypes.string,
+    order: PropTypes.string,
     search: PropTypes.string,
 }
 

@@ -35,6 +35,21 @@ msgstr ""
 msgid "No Geometry"
 msgstr ""
 
+msgid "Name"	
+msgstr ""	
+
+msgid "UID"	
+msgstr ""	
+
+msgid "Level"	
+msgstr ""	
+
+msgid "Users"	
+msgstr ""	
+
+msgid "Geometry Type"	
+msgstr ""
+
 msgid "NONE"
 msgstr ""
 

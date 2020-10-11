@@ -12,33 +12,29 @@ import {
     Button,
 } from '@dhis2/ui'
 import i18n from '@dhis2/d2-i18n'
-import { UserCount } from './UserCount'
+// import { UserCount } from './UserCount'
 
 import styles from './OrgUnitSection.module.css'
 
 export const OrgUnitTable = ({ orgUnits, orderBy }) => {
     const { baseUrl } = useConfig()
-    const [order, setOrder] = useState('asc');
+    const [order, setOrder] = useState('asc')
 
-    const handleHeaderClick = (field) => {
+    const handleHeaderClick = field => {
         // There's probably a simpler way to do this...just going between acedning and descending for the query
-        setOrder(order === 'asc' ? 'desc' : order === 'desc' ? 'asc': 'desc')
+        setOrder(order === 'asc' ? 'desc' : order === 'desc' ? 'asc' : 'desc')
         //orderBy is actually our refetch paginated query/function we pass down as props
-        orderBy({order: `${field}:${order}` })
+        orderBy({ order: `${field}:${order}` })
     }
 
     const tableHeaders = [
-        {display: 'Name',
-        field: 'displayName'},
-        {display: 'UID',
-        field: 'id'},
-        {display: 'Level',
-        field: 'level'},
+        { display: 'Name', field: 'displayName' },
+        { display: 'UID', field: 'id' },
+        { display: 'Level', field: 'level' },
         // {display: 'Users',
         // field: 'Users'},
-        {display: 'Geometry Type',
-        field: 'geometry'}
-    ];
+        { display: 'Geometry Type', field: 'geometry' },
+    ]
 
     return (
         <>
@@ -46,7 +42,17 @@ export const OrgUnitTable = ({ orgUnits, orderBy }) => {
                 <Table className={styles.table}>
                     <TableHead>
                         <TableRowHead>
-                            {tableHeaders.map(header => <TableCellHead><span onClick={()=> handleHeaderClick(header.field)}>{i18n.t(header.display)}</span></TableCellHead>)}
+                            {tableHeaders.map(header => (
+                                <TableCellHead key={header.field}>
+                                    <span
+                                        onClick={() =>
+                                            handleHeaderClick(header.field)
+                                        }
+                                    >
+                                        {i18n.t(header.display)}
+                                    </span>
+                                </TableCellHead>
+                            ))}
                             <TableCellHead></TableCellHead>
                         </TableRowHead>
                     </TableHead>
@@ -92,5 +98,6 @@ export const OrgUnitTable = ({ orgUnits, orderBy }) => {
 }
 
 OrgUnitTable.propTypes = {
+    orderBy: PropTypes.func.isRequired,
     orgUnits: PropTypes.array.isRequired,
 }
