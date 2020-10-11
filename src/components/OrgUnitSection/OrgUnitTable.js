@@ -16,19 +16,28 @@ import i18n from '@dhis2/d2-i18n'
 
 import styles from './OrgUnitSection.module.css'
 
+const SortArrow = ({ direction }) =>
+    direction > 0 ? (
+        <span className={styles.sortArrow}>&#9660;</span>
+    ) : (
+        <span className={styles.sortArrow}>&#9650;</span>
+    )
+
+SortArrow.propTypes = {
+    direction: PropTypes.number.isRequired,
+}
+
 export const OrgUnitTable = ({ orgUnits, orderBy }) => {
     const { baseUrl } = useConfig()
     const [order, setOrder] = useState({ column: 'displayName', direction: 1 })
 
-    const handleHeaderClick = field => {
-        if (order.column === field) {
-            setOrder({ column: field, direction: order.direction * -1 })
-        } else {
-            setOrder({ column: field, direction: 1 })
-        }
+    const handleHeaderClick = column => {
+        const direction = order.column === column ? order.direction * -1 : 1
 
-        const direction = order.direction > 0 ? 'asc' : 'desc'
-        orderBy({ order: `${order.field}:${direction}` })
+        setOrder({ column, direction })
+
+        const directionStr = direction > 0 ? 'asc' : 'desc'
+        orderBy({ order: `${column}:${directionStr}` })
     }
 
     const tableHeaders = [
@@ -46,14 +55,22 @@ export const OrgUnitTable = ({ orgUnits, orderBy }) => {
                     <TableHead>
                         <TableRowHead>
                             {tableHeaders.map(header => (
-                                <TableCellHead key={header.field}>
-                                    <span
+                                <TableCellHead
+                                    key={header.field}
+                                    className={styles.columnHeader}
+                                >
+                                    <div
                                         onClick={() =>
                                             handleHeaderClick(header.field)
                                         }
                                     >
                                         {header.display}
-                                    </span>
+                                        {header.field === order.column ? (
+                                            <SortArrow
+                                                direction={order.direction}
+                                            />
+                                        ) : null}
+                                    </div>
                                 </TableCellHead>
                             ))}
                             <TableCellHead></TableCellHead>
