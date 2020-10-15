@@ -10,10 +10,11 @@ import styles from './OrgUnitSection.module.css'
 const query = {
     orgUnits: {
         resource: 'organisationUnits',
-        params: ({ page, search, filter }) => {
+        params: ({ page, search, filter, order }) => {
             return {
                 pageSize: 5,
                 page: page,
+                order: order,
                 fields: ['id', 'displayName', 'level', 'geometry'],
                 filter: search
                     ? `displayName:ilike:${search}`
@@ -25,7 +26,7 @@ const query = {
     },
 }
 
-function FilteredOrgUnitTable({ search, filter }) {
+function FilteredOrgUnitTable({ search, filter, order }) {
     const [data, setData] = useState(undefined)
     const { loading, error, refetch } = useDataQuery(query, {
         onComplete: setData,
@@ -38,6 +39,7 @@ function FilteredOrgUnitTable({ search, filter }) {
                 search,
                 filter,
                 page: 1,
+                order,
             })
         } else {
             isFirstRender.current = false
@@ -51,12 +53,18 @@ function FilteredOrgUnitTable({ search, filter }) {
     if (!data) {
         return i18n.t('Loading...')
     }
+    if (data?.orgUnits?.organisationUnits.length < 1) {
+        return `${i18n.t('No results found for')} '${search}'.`
+    }
 
     return (
         <>
             <div className={styles.tableContainer}>
                 {loading && <ComponentCover translucent />}
-                <OrgUnitTable orgUnits={data.orgUnits.organisationUnits} />
+                <OrgUnitTable
+                    orgUnits={data.orgUnits.organisationUnits}
+                    orderBy={refetch}
+                />
             </div>
             <div className={styles.tableFooter}>
                 <Button
@@ -96,6 +104,7 @@ function FilteredOrgUnitTable({ search, filter }) {
 
 FilteredOrgUnitTable.propTypes = {
     filter: PropTypes.string,
+    order: PropTypes.string,
     search: PropTypes.string,
 }
 

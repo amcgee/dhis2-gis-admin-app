@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { useConfig } from '@dhis2/app-runtime'
 import {
@@ -12,27 +12,67 @@ import {
     Button,
 } from '@dhis2/ui'
 import i18n from '@dhis2/d2-i18n'
-import { UserCount } from './UserCount'
+// import { UserCount } from './UserCount'
 
 import styles from './OrgUnitSection.module.css'
 
-export const OrgUnitTable = ({ orgUnits }) => {
+const SortArrow = ({ direction }) =>
+    direction > 0 ? (
+        <span className={styles.sortArrow}>&#9660;</span>
+    ) : (
+        <span className={styles.sortArrow}>&#9650;</span>
+    )
+
+SortArrow.propTypes = {
+    direction: PropTypes.number.isRequired,
+}
+
+export const OrgUnitTable = ({ orgUnits, orderBy }) => {
     const { baseUrl } = useConfig()
+    const [order, setOrder] = useState({ column: 'displayName', direction: 1 })
+
+    const handleHeaderClick = column => {
+        const direction = order.column === column ? order.direction * -1 : 1
+
+        setOrder({ column, direction })
+
+        const directionStr = direction > 0 ? 'asc' : 'desc'
+        orderBy({ order: `${column}:${directionStr}` })
+    }
+
+    const tableHeaders = [
+        { display: i18n.t('Name'), field: 'displayName' },
+        { display: i18n.t('UID'), field: 'id' },
+        { display: i18n.t('Level'), field: 'level' },
+        // {display: i18n.t('Users'), field: 'Users'},
+        { display: i18n.t('Geometry Type'), field: 'geometry' },
+    ]
+
     return (
         <>
             {orgUnits.length ? (
                 <Table className={styles.table}>
                     <TableHead>
                         <TableRowHead>
-                            <TableCellHead className={styles.stretchCell}>
-                                {i18n.t('Name')}
-                            </TableCellHead>
-                            <TableCellHead>{i18n.t('UID')}</TableCellHead>
-                            <TableCellHead>{i18n.t('Level')}</TableCellHead>
-                            <TableCellHead>{i18n.t('Users')}</TableCellHead>
-                            <TableCellHead>
-                                {i18n.t('Geometry Type')}
-                            </TableCellHead>
+                            {tableHeaders.map(header => (
+                                <TableCellHead
+                                    key={header.field}
+                                    className={styles.columnHeader}
+                                >
+                                    <div
+                                        onClick={() =>
+                                            handleHeaderClick(header.field)
+                                        }
+                                    >
+                                        {header.display}
+                                        {header.field === order.column ? (
+                                            <SortArrow
+                                                direction={order.direction}
+                                            />
+                                        ) : null}
+                                    </div>
+                                </TableCellHead>
+                            ))}
                             <TableCellHead></TableCellHead>
                         </TableRowHead>
                     </TableHead>
@@ -43,9 +83,9 @@ export const OrgUnitTable = ({ orgUnits }) => {
                                     <TableCell>{orgUnit.displayName}</TableCell>
                                     <TableCell>{orgUnit.id}</TableCell>
                                     <TableCell>{orgUnit.level}</TableCell>
-                                    <TableCell>
+                                    {/* <TableCell>
                                         <UserCount orgUnitID={orgUnit.id} />
-                                    </TableCell>
+                                    </TableCell> */}
                                     <TableCell>
                                         {orgUnit.geometry
                                             ? orgUnit.geometry.type
@@ -78,5 +118,6 @@ export const OrgUnitTable = ({ orgUnits }) => {
 }
 
 OrgUnitTable.propTypes = {
+    orderBy: PropTypes.func.isRequired,
     orgUnits: PropTypes.array.isRequired,
 }

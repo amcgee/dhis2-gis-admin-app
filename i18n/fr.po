@@ -61,3 +61,6 @@ msgstr "Unités d'Org sur l'Île Nulle"
 
 msgid "Overview"
 msgstr "Aperçu"
+
+msgid "No results found for"
+msgstr "Aucun résultat trouvé pour"
