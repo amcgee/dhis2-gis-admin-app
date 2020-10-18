@@ -16,6 +16,7 @@ const query = {
                 page: page,
                 order: order,
                 fields: ['id', 'displayName', 'level', 'geometry'],
+                // fields: ['*'],
                 filter: search
                     ? `displayName:ilike:${search}`
                     : filter === 'invalid'
@@ -31,6 +32,7 @@ function FilteredOrgUnitTable({ search, filter, order }) {
     const { loading, error, refetch } = useDataQuery(query, {
         onComplete: setData,
     })
+    console.log(data)
 
     const isFirstRender = useRef(true)
     useEffect(() => {
