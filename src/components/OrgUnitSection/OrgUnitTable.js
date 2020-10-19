@@ -32,7 +32,8 @@ export const OrgUnitTable = ({ orgUnits, orderBy }) => {
     const { baseUrl } = useConfig()
     const [order, setOrder] = useState({ column: 'displayName', direction: 1 })
     const [showModal, setShowModal] = useState(false)
-    const [coords, setCoords] = useState([])
+    /* selected org unit when user clicks 'View Map' button */
+    const [orgUnit, setSelectedOrgUnit] = useState(null)
 
     const handleHeaderClick = column => {
         const direction = order.column === column ? order.direction * -1 : 1
@@ -43,19 +44,28 @@ export const OrgUnitTable = ({ orgUnits, orderBy }) => {
         orderBy({ order: `${column}:${directionStr}` })
     }
 
-    const handleViewMapClick = coordinates => {
-        if (coordinates) {
-            console.log(coordinates)
-            debugger
-            setCoords(coordinates)
+    const handleViewMapClick = orgUnit => {
+        if (orgUnit.geometry.coordinates) {
+            setSelectedOrgUnit({
+                displayName: orgUnit.displayName,
+                id: orgUnit.id,
+                type: orgUnit.geometry.type,
+                coords: orgUnit.geometry.coordinates,
+            })
             setShowModal(true)
         } else {
+            setSelectedOrgUnit({
+                displayName: orgUnit.displayName,
+                id: orgUnit.id,
+                type: null,
+                coords: null,
+            })
             console.warn('no geometry')
         }
     }
 
     const closeMapModal = () => {
-        setCoords([])
+        setSelectedOrgUnit(null)
         setShowModal(false)
     }
 
@@ -69,8 +79,8 @@ export const OrgUnitTable = ({ orgUnits, orderBy }) => {
 
     return (
         <>
-            {coords && showModal && (
-                <MapModal coords={coords} close={closeMapModal} />
+            {orgUnit && showModal && (
+                <MapModal orgUnit={orgUnit} close={closeMapModal} />
             )}
             {orgUnits.length ? (
                 <Table className={styles.table}>
@@ -114,21 +124,16 @@ export const OrgUnitTable = ({ orgUnits, orderBy }) => {
                                             : i18n.t('NONE')}
                                     </TableCell>
                                     <TableCell>
-                                        {orgUnit.geometry ? (
-                                            <Button
-                                                onClick={() =>
-                                                    handleViewMapClick(
-                                                        orgUnit.geometry
-                                                            .coordinates
-                                                    )
-                                                }
-                                            >
-                                                {i18n.t('View Map')}
-                                                {/* TODO: translations */}
-                                            </Button>
-                                        ) : (
-                                            i18n.t('N/A')
-                                        )}
+                                        <Button
+                                            onClick={() =>
+                                                handleViewMapClick(orgUnit)
+                                            }
+                                        >
+                                            {orgUnit.geometry
+                                                ? i18n.t('View Map')
+                                                : 'Add geometry'}
+                                            {/* TODO: translations */}
+                                        </Button>
                                     </TableCell>
                                     <TableCell>
                                         <Button

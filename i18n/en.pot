@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-10-17T22:49:52.599Z\n"
-"PO-Revision-Date: 2020-10-17T22:49:52.599Z\n"
+"POT-Creation-Date: 2020-10-19T03:13:55.434Z\n"
+"PO-Revision-Date: 2020-10-19T03:13:55.434Z\n"
 
 msgid "An error occurred!"
 msgstr ""
@@ -54,9 +54,6 @@ msgid "NONE"
 msgstr ""
 
 msgid "View Map"
-msgstr ""
-
-msgid "N/A"
 msgstr ""
 
 msgid "Edit"

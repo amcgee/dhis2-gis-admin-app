@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import mapboxgl from 'mapbox-gl'
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
+import centroid from '@turf/centroid'
+import { polygon } from '@turf/helpers'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 
@@ -18,10 +20,11 @@ const wrapperStyle = {
 
 mapboxgl.accessToken =
     'pk.eyJ1IjoibWhhbmxleTAwIiwiYSI6ImNrZ2U0NWMwZzE3MjkzMG1peXo3MXpweHoifQ.9qRZGUKdnUf4itMTRv21PQ'
-const MiniMap = ({ coords, dragable, updateCoords }) => {
+const MiniMap = ({ coords, editMode, type, updateGeo }) => {
     const [map, setMap] = useState(null)
     const [activeMarker, setMarker] = useState(null)
     const [activePolygon, setPolygon] = useState(null)
+    const [drawTools, setDrawTools] = useState(null)
     const mapContainer = useRef(null)
 
     /*
@@ -34,31 +37,52 @@ const MiniMap = ({ coords, dragable, updateCoords }) => {
         bottomRight: 'bottom-right',
     }
 
+    const findCenter = (geometry, type) => {
+        if (geometry?.length > 0) {
+            switch (type.toLowerCase()) {
+                case 'point': {
+                    if (geometry?.length === 2) {
+                        /* Center on the lat/long if geo is a point and there are only 2 lat/longs */
+                        return geometry
+                    }
+                    break
+                }
+                case 'polygon': {
+                    /* First find the centroid of the polygon; resulting lat/lon should be our map center */
+                    const feature = polygon(geometry)
+                    const center = centroid(feature)
+                    return center.geometry.coordinates
+                }
+            }
+        }
+        // TODO: if there is no geo, center on the parent polygon
+    }
+
     const addMarkerToMap = () => {
         if (activeMarker) {
             activeMarker.remove()
             setMarker(null)
         }
         // TODO: refactor
-        // .setHTML('<h1>Hello World!</h1>') // option for cooler popup styling
+        // .setText(`Current location: ${coords[0]}, ${coords[1]}`)
         const popup = new mapboxgl.Popup({ offset: 25 })
-            .setText(`Current location: ${coords[0]}, ${coords[1]}`)
+            .setHTML(`<h2>Current location: ${coords[0]}, ${coords[1]}</h2>`)
             .setMaxWidth('300px')
 
-        const marker = new mapboxgl.Marker({ draggable: dragable })
+        const marker = new mapboxgl.Marker({ draggable: editMode })
             .setLngLat(coords)
             .setPopup(popup)
             .addTo(map)
         setMarker(marker)
 
         const onDragEnd = () => {
-            /* Below line retrieves lat/long in object format
+            /* `getLngLat` method retrieves lat/long in object format
                ie lat: 3.5149796969459857 lng: 11.661443864314748
             */
             const { lat, lng } = marker.getLngLat()
             console.log(lat, lng)
             //helping to update parent component
-            updateCoords([lng, lat])
+            updateGeo([lng, lat])
             // could/should put new lat/long in ui
             // coordinates.style.display = 'block'
             // coordinates.innerHTML =
@@ -69,54 +93,28 @@ const MiniMap = ({ coords, dragable, updateCoords }) => {
     }
 
     const addPolygonToMap = () => {
-        /*
-      // If a layer with ID 'state-data' exists, remove it.
-if (map.getLayer('state-data')) map.removeLayer('state-data');
-
-map.removeSource('bathymetry-data');
-*/
-        console.log(map)
-        // var sourceObject = map.getSource('points') // undefined if not a source on the map...
-        debugger
-        map.addSource('test', {
+        // var sourceObject = map.getSource('polygon') // undefined if not a source on the map...
+        // If a layer with the current ID exists, remove it.
+        const id = 'polygon'
+        if (map.getLayer(id) || map.getSource(id)) {
+            map.removeLayer(id)
+            map.removeSource(id)
+        }
+        map.addSource(id, {
             type: 'geojson',
             data: {
                 type: 'Feature',
                 geometry: {
                     type: 'Polygon',
                     coordinates: coords,
-                    // coordinates: [
-                    //     [
-                    //         [-67.13734351262877, 45.137451890638886],
-                    //         [-66.96466, 44.8097],
-                    //         [-68.03252, 44.3252],
-                    //         [-69.06, 43.98],
-                    //         [-70.11617, 43.68405],
-                    //         [-70.64573401557249, 43.090083319667144],
-                    //         [-70.75102474636725, 43.08003225358635],
-                    //         [-70.79761105007827, 43.21973948828747],
-                    //         [-70.98176001655037, 43.36789581966826],
-                    //         [-70.94416541205806, 43.46633942318431],
-                    //         [-71.08482, 45.3052400000002],
-                    //         [-70.6600225491012, 45.46022288673396],
-                    //         [-70.30495378282376, 45.914794623389355],
-                    //         [-70.00014034695016, 46.69317088478567],
-                    //         [-69.23708614772835, 47.44777598732787],
-                    //         [-68.90478084987546, 47.184794623394396],
-                    //         [-68.23430497910454, 47.35462921812177],
-                    //         [-67.79035274928509, 47.066248887716995],
-                    //         [-67.79141211614706, 45.702585354182816],
-                    //         [-67.13734351262877, 45.137451890638886],
-                    //     ],
-                    // ],
                 },
             },
         })
 
         map.addLayer({
-            id: 'test',
+            id: id,
             type: 'fill',
-            source: 'test',
+            source: id,
             layout: {},
             paint: {
                 'fill-color': '#088',
@@ -125,51 +123,94 @@ map.removeSource('bathymetry-data');
         })
     }
 
+    const updateMap = () => {
+        // TODO: confirm only need to support point and polygons
+        switch (type.toLowerCase()) {
+            case 'point': {
+                addMarkerToMap()
+                break
+            }
+            case 'polygon': {
+                if (editMode) {
+                    const draw = new MapboxDraw({
+                        displayControlsDefault: false,
+                        controls: {
+                            polygon: true,
+                            trash: true,
+                        },
+                    })
+                    setDrawTools(draw)
+                    map.addControl(draw, position.topLeft)
+
+                    const clearDrawing = () => {
+                        debugger
+                        console.log(draw)
+                        // TODO: for some reason this breaks on second edit (ie draw, save, edit and draw again)
+                        const featureCollection = draw.getAll()
+                        if (featureCollection?.features?.length > 1) {
+                            draw.delete(
+                                featureCollection.features[0].id
+                            ).getAll()
+                        }
+                    }
+
+                    map.on('draw.create', e => {
+                        /* Delete previously drawn polygons on each new draw event */
+                        clearDrawing()
+                        // const feature =
+                        //     e.features?.length > 1
+                        //         ? e.features.shift()[0]
+                        //         : e.features[0]
+                        const feature = e.features[0]
+                        updateGeo(feature.geometry.coordinates)
+                    })
+                    map.on('draw.update', e => {
+                        console.log(e.features)
+                        updateGeo(e.features[0].geometry.coordinates)
+                    })
+                }
+                addPolygonToMap()
+                break
+            }
+        }
+    }
+
     useEffect(() => {
         const initializeMap = ({ setMap, mapContainer }) => {
             const map = new mapboxgl.Map({
                 container: mapContainer.current,
                 style: 'mapbox://styles/mapbox/streets-v11',
-                center: coords, // TODO: need to find centroid of polygons
-                // center: [-11.3516, 8.0819], // TODO: need to find centroid of polygons
+                center: findCenter(coords, type),
                 zoom: 5,
             })
 
             map.addControl(new mapboxgl.FullscreenControl())
 
-            const draw = new MapboxDraw({
-                displayControlsDefault: true,
-                controls: {
-                    polygon: true,
-                    trash: true,
-                },
-            })
-            map.addControl(draw, position.topLeft)
-
             map.on('load', () => {
                 setMap(map)
                 map.resize()
-                // addMarkerToMap(map)
-                // addPolygonToMap() // put in setTimeout sooooo map has time to change in state?
             })
             map.on('click', e => {
                 console.log(e)
             })
         }
 
-        if (!map) initializeMap({ setMap, mapContainer })
-        if (dragable) {
-            addMarkerToMap() //TODO: ADD ME BACK IN
+        if (!map) {
+            initializeMap({ setMap, mapContainer })
         }
-        if (map) {
-            addMarkerToMap() //TODO: ADD ME BACK IN
-            // addPolygonToMap()
+        if (map || editMode) {
+            updateMap()
         }
-        if (map && !dragable && activeMarker) {
+        if (map && !editMode && activeMarker) {
             //make sure we can't drag the marker once we've "saved" it
             activeMarker.setDraggable(false)
+            // remove draw tools from map
         }
-    }, [map, dragable])
+        if (map && !editMode && drawTools) {
+            map.removeControl(drawTools)
+            setDrawTools(null)
+        }
+    }, [map, editMode])
     return (
         <div style={wrapperStyle}>
             <div
@@ -177,7 +218,7 @@ map.removeSource('bathymetry-data');
                 id="map"
                 style={styles}
             ></div>
-            <pre id="coordinates" className="coordinates"></pre>
+            {/* <pre id="coordinates" className="coordinates"></pre> */}
         </div>
     )
 }
@@ -186,6 +227,7 @@ export default MiniMap
 
 MiniMap.propTypes = {
     coords: PropTypes.array.isRequired,
-    dragable: PropTypes.bool.isRequired,
-    updateCoords: PropTypes.func.isRequired,
+    editMode: PropTypes.bool.isRequired,
+    type: PropTypes.string.isRequired,
+    updateGeo: PropTypes.func.isRequired,
 }

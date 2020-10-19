@@ -9,36 +9,46 @@ import {
 } from '@dhis2/ui-core'
 import MiniMap from './MiniMap'
 
-const MapModal = ({ coords, close }) => {
-    const [dragable, setDragable] = useState(false)
-    const [currentCoordinates, setCurrentCoordinates] = useState(coords)
+const MapModal = ({ orgUnit, close }) => {
+    const [editMode, setEditMode] = useState(false)
+    const [currentGeo, setCurrentGeo] = useState(orgUnit.coords)
 
     const handleEdit = () => {
-        setDragable(!dragable)
+        setEditMode(!editMode)
     }
-    const saveNewCoords = () => {
-        setDragable(false)
-        // TODO: call to api w/ new coordinates
+    const saveNewGeo = () => {
+        setEditMode(false)
+        if (currentGeo !== orgUnit.coords) {
+            // TODO: call to api w/ new coordinates
+            alert(`${orgUnit.type} has been updated`)
+        }
     }
+    /*
+    displayName: orgUnit.displayName,
+    id: orgUnit.id,
+    type: orgUnit.geometry.type,
+    coords: orgUnit.geometry.coordinates,
+    */
 
     // useEffect(() => {
     // }, [])
     return (
         <Modal onClose={() => close()}>
-            <ModalTitle>Hello</ModalTitle>
+            <ModalTitle>{orgUnit.displayName}</ModalTitle>
             <ModalContent>
                 <MiniMap
-                    coords={currentCoordinates}
-                    updateCoords={setCurrentCoordinates}
-                    dragable={dragable}
+                    coords={currentGeo}
+                    type={orgUnit.type}
+                    updateGeo={setCurrentGeo}
+                    editMode={editMode}
                 />
             </ModalContent>
             <ModalActions>
                 <Button primary onClick={() => handleEdit()}>
-                    Edit Coordinates
+                    {editMode ? 'Cancel' : 'Edit Coordinates'}
                 </Button>
-                {dragable && (
-                    <Button primary onClick={() => saveNewCoords()}>
+                {editMode && (
+                    <Button primary onClick={() => saveNewGeo()}>
                         Save
                     </Button>
                 )}
@@ -51,5 +61,5 @@ export default MapModal
 
 MapModal.propTypes = {
     close: PropTypes.func.isRequired,
-    coords: PropTypes.array.isRequired,
+    orgUnit: PropTypes.object.isRequired,
 }
